@@ -36,8 +36,15 @@ contract DVMStorage is InitializableOwnable, ReentrancyGuard {
     IERC20 public _BASE_TOKEN_;
     IERC20 public _QUOTE_TOKEN_;
 
-    uint256 public _BASE_RESERVE_;
-    uint256 public _QUOTE_RESERVE_;
+    uint128 public _BASE_RESERVE_;
+    uint128 public _QUOTE_RESERVE_;
+
+    // ============ Variables for Pricing ============
+
+    IFeeRateModel public _LP_FEE_RATE_MODEL_;
+    IFeeRateModel public _MT_FEE_RATE_MODEL_;
+    uint256 public _K_;
+    uint256 public _I_;
 
     // ============ Shares (ERC20) ============
 
@@ -56,13 +63,6 @@ contract DVMStorage is InitializableOwnable, ReentrancyGuard {
     bytes32
         public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
     mapping(address => uint256) public nonces;
-
-    // ============ Variables for Pricing ============
-
-    IFeeRateModel public _LP_FEE_RATE_MODEL_;
-    IFeeRateModel public _MT_FEE_RATE_MODEL_;
-    uint256 public _K_;
-    uint256 public _I_;
 
     // ============ Events ============
 
@@ -129,5 +129,18 @@ contract DVMStorage is InitializableOwnable, ReentrancyGuard {
     function setSell(bool open) external onlyOwner {
         emit SetSell(open);
         _SELLING_CLOSE_ = !open;
+    }
+
+    // ============ Internal Help Functions ============
+
+    function _getReserve() internal view returns (uint256 _baseReserve, uint256 _quoteReserve) {
+        _baseReserve = uint256(_BASE_RESERVE_);
+        _quoteReserve = uint256(_QUOTE_RESERVE_);
+    }
+
+    function _setReserve(uint256 baseReserve, uint256 quoteReserve) internal {
+        require(baseReserve <= uint128(-1) && quoteReserve <= uint128(-1), "OVERFLOW");
+        _BASE_RESERVE_ = uint128(baseReserve);
+        _QUOTE_RESERVE_ = uint128(quoteReserve);
     }
 }

@@ -25,4 +25,9 @@ contract ReentrancyGuard {
         _;
         _ENTERED_ = false;
     }
+
+    modifier simplePreventReentrant() {
+        require(!_ENTERED_, "REENTRANT");
+        _;
+    }
 }

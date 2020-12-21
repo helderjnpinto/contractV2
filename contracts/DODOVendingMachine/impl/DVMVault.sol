@@ -31,28 +31,35 @@ contract DVMVault is DVMStorage {
     // ============ View Functions ============
 
     function getVaultReserve() external view returns (uint256 baseReserve, uint256 quoteReserve) {
-        baseReserve = _BASE_RESERVE_;
-        quoteReserve = _QUOTE_RESERVE_;
+        (baseReserve, quoteReserve) = _getReserve();
     }
 
-    function getUserFeeRate(address user) external view returns (uint256 lpFeeRate, uint256 mtFeeRate) {
+    function getUserFeeRate(address user)
+        external
+        view
+        returns (uint256 lpFeeRate, uint256 mtFeeRate)
+    {
         lpFeeRate = _LP_FEE_RATE_MODEL_.getFeeRate(user);
         mtFeeRate = _MT_FEE_RATE_MODEL_.getFeeRate(user);
     }
 
-    function getUserTradePermission(address user) external view returns (bool isBuyAllow, bool isSellAllow) {
+    function getUserTradePermission(address user)
+        external
+        view
+        returns (bool isBuyAllow, bool isSellAllow)
+    {
         isBuyAllow = (!_BUYING_CLOSE_ && _TRADE_PERMISSION_.isAllowed(user));
-        isSellAllow =  (!_SELLING_CLOSE_ && _TRADE_PERMISSION_.isAllowed(user));
+        isSellAllow = (!_SELLING_CLOSE_ && _TRADE_PERMISSION_.isAllowed(user));
     }
 
     // ============ Asset In ============
 
     function getBaseInput() public view returns (uint256 input) {
-        return _BASE_TOKEN_.balanceOf(address(this)).sub(_BASE_RESERVE_);
+        return _BASE_TOKEN_.balanceOf(address(this)).sub(uint256(_BASE_RESERVE_));
     }
 
     function getQuoteInput() public view returns (uint256 input) {
-        return _QUOTE_TOKEN_.balanceOf(address(this)).sub(_QUOTE_RESERVE_);
+        return _QUOTE_TOKEN_.balanceOf(address(this)).sub(uint256(_QUOTE_RESERVE_));
     }
 
     // ============ Set States ============
@@ -60,14 +67,8 @@ contract DVMVault is DVMStorage {
     function _sync() internal {
         uint256 baseBalance = _BASE_TOKEN_.balanceOf(address(this));
         uint256 quoteBalance = _QUOTE_TOKEN_.balanceOf(address(this));
-        if (baseBalance != _BASE_RESERVE_) {
-            _BASE_RESERVE_ = baseBalance;
-        }
-        if (quoteBalance != _QUOTE_RESERVE_) {
-            _QUOTE_RESERVE_ = quoteBalance;
-        }
+        _setReserve(baseBalance, quoteBalance);
     }
-
 
     function sync() external preventReentrant {
         _sync();

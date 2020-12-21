@@ -33,8 +33,7 @@ contract DVMFunding is DVMVault {
     {
         uint256 baseBalance = _BASE_TOKEN_.balanceOf(address(this));
         uint256 quoteBalance = _QUOTE_TOKEN_.balanceOf(address(this));
-        uint256 baseReserve = _BASE_RESERVE_;
-        uint256 quoteReserve = _QUOTE_RESERVE_;
+        (uint256 baseReserve, uint256 quoteReserve) = _getReserve();
 
         baseInput = baseBalance.sub(baseReserve);
         quoteInput = quoteBalance.sub(quoteReserve);

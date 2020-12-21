@@ -66,6 +66,15 @@ describe("Trader", () => {
       console.log("DVM name", await ctx.DVM.methods.name().call())
     })
 
+    it("buy & sell gas cost", async () => {
+      await ctx.transferQuoteToDVM(trader, decimalStr("200"))
+      await logGas(ctx.DVM.methods.sellQuote(trader), ctx.sendParam(trader), "first trade")
+      await ctx.transferBaseToDVM(trader, decimalStr("1"))
+      await logGas(ctx.DVM.methods.sellBase(trader), ctx.sendParam(trader), "sell base token")
+      await ctx.transferQuoteToDVM(trader, decimalStr("200"))
+      await logGas(ctx.DVM.methods.sellQuote(trader), ctx.sendParam(trader), "buy base token")
+    })
+
     it("buy & sell", async () => {
 
       // buy
