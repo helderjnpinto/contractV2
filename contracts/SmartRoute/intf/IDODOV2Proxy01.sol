@@ -16,7 +16,7 @@ interface IDODOV2Proxy01 is IDODOV1Proxy01 {
         address toToken,
         uint256 minReturnAmount,
         address[] memory dodoPairs,
-        uint8[] memory directions,
+        uint256 directions,
         uint256 deadLine
     ) external payable returns (uint256 returnAmount);
 
@@ -26,7 +26,7 @@ interface IDODOV2Proxy01 is IDODOV1Proxy01 {
         uint256 fromTokenAmount,
         uint256 minReturnAmount,
         address[] memory dodoPairs,
-        uint8[] memory directions,
+        uint256 directions,
         uint256 deadLine
     ) external returns (uint256 returnAmount);
 
@@ -37,7 +37,7 @@ interface IDODOV2Proxy01 is IDODOV1Proxy01 {
         uint256 fromTokenAmount,
         uint256 minReturnAmount,
         address[] memory dodoPairs,
-        uint8[] memory directions,
+        uint256 directions,
         uint256 deadLine
     ) external returns (uint256 returnAmount);
 
